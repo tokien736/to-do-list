@@ -1,36 +1,56 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 
+// Declaración de datos reactivos
+const todos = ref([]) // Lista de tareas
+const name = ref('') // Nombre del usuario
+
+const input_content = ref('') // Contenido de la nueva tarea
+const input_category = ref(null) // Categoría de la nueva tarea
 
 // Ordenar las tareas por fecha de creación ascendente
 const todos_asc = computed(() => todos.value.sort((a,b) => {
-
+    return a.createdAt - b.createdAt
 }))
 
 // Observadores para guardar datos en el localStorage
 watch(name, (newVal) => {
-
+    localStorage.setItem('name', newVal)
 })
 
 watch(todos, (newVal) => {
-
+    localStorage.setItem('todos', JSON.stringify(newVal))
+}, {
+    deep: true
 })
 
 // Función para agregar una nueva tarea
 const addTodo = () => {
+    if (input_content.value.trim() === '' || input_category.value === null) {
+        return
+    }
 
+    todos.value.push({
+        content: input_content.value,
+        category: input_category.value,
+        done: false,
+        editable: false,
+        createdAt: new Date().getTime() // Registrar la fecha de creación
+    })
 }
 
 // Función para eliminar una tarea
 const removeTodo = (todo) => {
-
+    todos.value = todos.value.filter((t) => t !== todo)
 }
 
 // Inicialización de datos al cargar la página
 onMounted(() => {
-   
+    name.value = localStorage.getItem('name') || '' // Obtener nombre del localStorage
+    todos.value = JSON.parse(localStorage.getItem('todos')) || [] // Obtener tareas del localStorage
 })
 </script>
+
 <template>
   <main class="app">
       
@@ -95,9 +115,9 @@ onMounted(() => {
       <section class="todo-list">
           <h3>LISTA DE TAREAS</h3>
           <div class="list" id="todo-list">
-  
+
               <!-- Iteración sobre la lista de tareas y renderizado -->
-              <div v-for="todo in todos_asc" :class="todo-item ${todo.done && 'done'}">
+              <div v-for="todo in todos_asc" :class="`todo-item ${todo.done && 'done'}`">
                   <label>
                       <!-- Checkbox para marcar la tarea como completada -->
                       <input type="checkbox" v-model="todo.done" />
