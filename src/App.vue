@@ -136,7 +136,7 @@ onMounted(() => {
   
                   <!-- Acciones para la tarea (eliminar) -->
                   <div class="actions">
-                      <button class="delete" @click="removeTodo(todo)">Delete</button>
+                      <button class="delete" @click="removeTodo(todo)">Eliminar</button>
                   </div>
               </div>
   
